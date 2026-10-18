@@ -43,6 +43,8 @@ python quick_start.py
 
 ## Overview
 
+For a source-level tour, read [Understanding PTX Gym](docs/architecture.md).
+
 A normal Triton compile lowers a kernel step by step: TTIR, then TTGIR, then
 LLVM/NVVM IR, then PTX, with a fixed set of hand-written passes. **AI
 lowering** removes that pipeline. A model writes the PTX for a Triton kernel

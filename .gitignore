@@ -4,3 +4,7 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 triton_src/third_party/nvidia/backend/bin/
+.venv*/
+.cache/
+results/
+tmp_files/
