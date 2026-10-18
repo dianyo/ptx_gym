@@ -44,6 +44,9 @@ python quick_start.py
 ## Overview
 
 For a source-level tour, read [Understanding PTX Gym](docs/architecture.md).
+For the classification curvature tasks, see the
+[softmax cross-entropy HVP benchmark](docs/softmax_ce_hvp.md) and
+[CPU development / DGX Spark runbook](docs/run_softmax_ce_hvp.md).
 
 A normal Triton compile lowers a kernel step by step: TTIR, then TTGIR, then
 LLVM/NVVM IR, then PTX, with a fixed set of hand-written passes. **AI
@@ -175,14 +178,20 @@ Each kernel is a subclass of
 problem size and declares the autotuning space. Pass its class name as the
 `kernel_id`.
 
-**Common kernels** ([`kernels/common`](ptx_gym/kernels/common)). Every one
-comes in `Float16` and `Float8` (E4M3) versions:
+**Common kernels** ([`kernels/common`](ptx_gym/kernels/common)). The original
+families below come in `Float16` and `Float8` (E4M3) versions:
 
 | Family | Classes |
 | --- | --- |
 | GEMM-like | `MatrixMultiplicationFloat{16,8}`, `MatrixVectorMultiplicationFloat*Kernel`, `Convolution2DFloat*Kernel`, `FusedGEMMAddSiLUFloat*Kernel`, `FusedGEMMAddGELUFloat*Kernel` |
 | Reductions and normalization | `SoftmaxFloat*Kernel`, `RMSNormFloat*Kernel`, `ReductionSumFloat*Kernel`, `RoPEFloat*Kernel` |
 | Elementwise | `ReLUFloat*Kernel`, `SiLUFloat*Kernel`, `SigmoidFloat*Kernel`, `GELUFloat*Kernel`, `SwiGLUFloat*Kernel`, `AddFloat*Kernel` |
+
+**Classification curvature:** `SoftmaxCrossEntropyHVP{Float32,Float16,BFloat16}Kernel`
+and `SoftmaxCrossEntropyHVPCached{Float32,Float16,BFloat16}Kernel` compute
+row-wise cross-entropy Hessian-vector products at shape `[4096, 1000]`.
+All outputs/reductions use FP32; cached probabilities also remain FP32.
+See the [benchmark definition](docs/softmax_ce_hvp.md) for the precision contract.
 
 **Kernels from recent papers** ([`kernels/papers`](ptx_gym/kernels/papers)).
 These are the authors' official Triton implementations. We only removed masks
