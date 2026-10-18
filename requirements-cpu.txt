@@ -1,0 +1,3 @@
+# Run from the checkout; do not pip-install the root GPU distribution on macOS.
+torch
+pytest
