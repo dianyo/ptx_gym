@@ -33,5 +33,9 @@ def test_extracted_ptx_can_be_injected_and_matches_triton_output(
     assert ptx is not None
     assert ".entry" in ptx
 
-    ptx_kernel = kernel_cls(ptx=ptx)
+    # Extracted PTX is specialized for the original instance's tuned config.
+    # Reuse it for both the reference and injected launches on the new instance.
+    ptx_kernel = kernel_cls(
+        ptx={"ptx": ptx, "tuning_config": dict(kernel.best_config)}
+    )
     assert verifier.verify(ptx_kernel)
